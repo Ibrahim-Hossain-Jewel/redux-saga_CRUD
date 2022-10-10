@@ -17,7 +17,17 @@ const makeSelectUpdateAbleUserData = () =>
   createSelector(counterModulesActivityLogDomain, (substate) =>
     substate.get("updateAbleData")
   );
-  export {counterModulesActivityLogDomain, 
+const makeSelectDeleteRow = () =>
+  createSelector(counterModulesActivityLogDomain, (substate) =>
+    substate.get("deleteRowData")
+  );
+const makeSelectDeleteRowDialogVisible = () =>
+  createSelector(counterModulesActivityLogDomain, (substate) =>
+    substate.get("deleteVisible")
+  );
+  export {counterModulesActivityLogDomain,
+    makeSelectDeleteRowDialogVisible,
+    makeSelectDeleteRow, 
     makeSelectAllUserData,
     makeSelectUpdateAbleUserData, 
     makeSelectUpdateVisible,

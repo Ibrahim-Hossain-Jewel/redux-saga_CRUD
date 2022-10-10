@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Dialog } from "primereact/dialog";
+import { ConfirmDialog } from "primereact/confirmdialog";
 import { InputText } from "primereact/inputtext";
 import { InputNumber } from 'primereact/inputnumber';
 import {createStructuredSelector} from 'reselect';
@@ -11,17 +12,23 @@ import {
   makeSelectUserRowData,
   makeSelectUpdateVisible,
   makeSelectUpdateAbleUserData,
+  makeSelectDeleteRowDialogVisible,
 } from "./selector";
 import { Button } from "primereact/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import PropTypes from "prop-types";
 import {
+  setDeleteRowData,
   setUserRowData,
   setUpdateDialogVisible,
   setUpdateDialogVisibleOff,
   setUpdateUserRowData,
   updatePostUserRow,
+  setDeleteVisible,
+  setDeleteInvisible,
+  deleteUserRowData,
 } from "./action";
 
 class UserDataInfo extends React.Component {
@@ -64,9 +71,14 @@ class UserDataInfo extends React.Component {
       age: this.state.updateAge,
       occupation: this.state.updateOccupation,
     };
-
     this.props.onChangeUpdateUserRowData(basicData);
+    this.props.onChangeUpdateVisibleHandler();
   };
+
+  deleteHandler = (evt, rowData)=>{
+    console.log("hit on delete handler", rowData);
+    this.props.sentDeleteRowData(rowData);
+  }
   render() {
     console.log("home props", this.props);
     var rowDataUpdateFirstName = "";
@@ -82,7 +94,18 @@ class UserDataInfo extends React.Component {
           <FontAwesomeIcon icon={faPencil} />
         </Button>
       );
-      return update;
+      let deleteBtn = (
+        <Button
+          style={{ marginLeft: "10px" }}
+          onClick={(e) => this.deleteHandler(e, allTableData)}
+        >
+          <FontAwesomeIcon icon={faTrash} />
+        </Button>
+      );
+      return <div>
+        {update}
+        {deleteBtn}
+      </div>;
     };
     return (
       <div className="grid">
@@ -128,22 +151,25 @@ class UserDataInfo extends React.Component {
                   <span className="p-inputgroup-addon">
                     <i className="pi pi-user"></i>
                   </span>
-                  <InputText placeholder="Lastname"
-                  onChange={this.lastNameHandler}
+                  <InputText
+                    placeholder="Lastname"
+                    onChange={this.lastNameHandler}
                   />
                 </div>
               </div>
               <div className="col-12 md:col-12">
                 <div className="p-inputgroup">
                   <span className="p-inputgroup-addon">Age</span>
-                  <InputNumber placeholder="Age" 
-                  onChange={this.ageHandler}/>
+                  <InputNumber placeholder="Age" onChange={this.ageHandler} />
                 </div>
               </div>
               <div className="col-12 md:col-12">
                 <div className="p-inputgroup">
                   <span className="p-inputgroup-addon">Occupation</span>
-                  <InputText placeholder="Occupation" onChange={this.occupationHandler}/>
+                  <InputText
+                    placeholder="Occupation"
+                    onChange={this.occupationHandler}
+                  />
                 </div>
               </div>
               <div className="col-12 md:col-12">
@@ -153,6 +179,35 @@ class UserDataInfo extends React.Component {
                     icon="pi pi-check"
                     iconPos="right"
                     onClick={this.postHandler}
+                  />
+                </div>
+              </div>
+            </div>
+          </Dialog>
+
+          {/*for delete options*/}
+          <Dialog
+            header="Delete Confirmation"
+            visible={this.props.deleteVisible}
+            onHide={this.props.onChangeDeleteDialogInvisible}
+            breakpoints={{ "960px": "75vw" }}
+            style={{ width: "50vw" }}
+          >
+            <span>Are you sure you want to proceed?</span>
+            <div className="grid">
+              <div className="col-12 md:col-12">
+                <div>
+                  <Button
+                    label="No"
+                    icon="pi pi-times"
+                    onClick={() => this.props.onChangeDeleteDialogInvisible()}
+                    className="p-button-text"
+                  />
+                  <Button
+                    label="Yes"
+                    icon="pi pi-check"
+                    onClick={() => this.props.onChangeDeleteOperation()}
+                    autoFocus
                   />
                 </div>
               </div>
@@ -169,21 +224,37 @@ UserDataInfo.propTypes = {
   rowData: PropTypes.any,
   updateVisible: PropTypes.bool,
   updateVisibleHandler: PropTypes.bool,
-  onChangeUpdateUserRowData: PropTypes.func
+  onChangeUpdateUserRowData: PropTypes.func,
+  sentDeleteRowData: PropTypes.func,
+  deleteVisible: PropTypes.bool,
+  onChangeDeleteDialogInvisible: PropTypes.func,
+  onChangeDeleteOperation: PropTypes.func
 };
 const mapStateToProps = createStructuredSelector({
   users: makeSelectAllUserData(),
   rowData: makeSelectUserRowData(),
   updateVisible: makeSelectUpdateVisible(),
-  jewel: makeSelectUpdateAbleUserData(),
+  deleteVisible: makeSelectDeleteRowDialogVisible(),
+  
 });
 
 const mapDispatchToProps = (dispatch)=>{
     return {
       dispatch,
+      onChangeDeleteOperation: (evt) =>{
+        dispatch(deleteUserRowData());
+      },
+      sentDeleteRowData : (evt) =>{
+        dispatch(setDeleteRowData(evt));
+        dispatch(setDeleteVisible());
+      },
+      onChangeDeleteDialogInvisible : (evt) =>{
+        dispatch((setDeleteInvisible()));
+      },
+      //end delete operation
       sentRowData : (evt)=>{
         dispatch(setUserRowData(evt));
-        dispatch(updatePostUserRow("trigger"));
+        dispatch(updatePostUserRow());
         dispatch(setUpdateDialogVisible());
       },
       onChangeUpdateVisibleHandler : () => {

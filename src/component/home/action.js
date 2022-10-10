@@ -5,16 +5,18 @@ import {
   UPDATE_VISIBLE_OFF,
   UPDATE_USER_ROW_DATA,
   GET_POSTS,
+  DELETE_ONE_USER,
+  DELETE_ROW_DATA,
+  DELETE_VISIBLE,
+  DELETE_INVISIBLE,
 } from "./constant";
 export const setFetchApiAction = (list) => {
-  // console.log(list)
   return {
     type: FETCHAPI,
     list,
   };
 };
 export const setUserRowData = (userRowData) =>{
-  console.log("action user data", userRowData);
   return {
     type: ROWDATA,
     userRowData,
@@ -31,15 +33,37 @@ export const setUpdateDialogVisibleOff = ()=>{
   };
 }
 export const setUpdateUserRowData = (submitUpdateUserRowData)=>{
-  console.log("submitUpdateUserRowData", submitUpdateUserRowData);
   return {
     type: UPDATE_USER_ROW_DATA,
     submitUpdateUserRowData,
   };
 }
-export const updatePostUserRow = (vale) =>{
-  console.log("action ", vale)
+export const updatePostUserRow = () =>{
   return {
     type: GET_POSTS,
+  };
+}
+//FOR DELETE
+export const deleteUserRowData = () =>{
+  return {
+    type: DELETE_ONE_USER
+  }
+}
+export const setDeleteRowData = (deleteRow)=>{
+  console.log("delete row data", deleteRow);
+  return {
+    type: DELETE_ROW_DATA,
+    deleteRow
+  };
+}
+export const setDeleteVisible = ()=>{
+  return {
+    type: DELETE_VISIBLE,
+  };
+}
+export const setDeleteInvisible = ()=>{
+  return {
+    type: DELETE_INVISIBLE,
+
   };
 }

@@ -3,14 +3,13 @@ import { setFetchApiAction, updatePostUserRow } from "./action";
 import {
   makeSelectUpdateAbleUserData,
   makeSelectUserRowData,
+  makeSelectDeleteRow,
 } from "./selector";
-import { GET_POSTS, UPDATE_USER_ROW_DATA } from "./constant";
+import { DELETE_ONE_USER, UPDATE_USER_ROW_DATA } from "./constant";
 export function* fetchUserName(loader){
-    console.log("hit on fetchuser name",loader);
+    console.log("hi"+loader);
   try {
     const requestUrl = "http://localhost:8082/users";
-    const res = yield call ( () => fetch(requestUrl));
-    const resData = yield res.json();
     const options = {
       method: "GET",
       headers: {
@@ -19,6 +18,9 @@ export function* fetchUserName(loader){
         Authorization: "",
       },
     };
+    const res = yield call ( () => fetch(requestUrl, options));
+    const resData = yield res.json();
+    
     yield put(setFetchApiAction(resData));
   } catch (e) {
     console.log(e);
@@ -29,19 +31,17 @@ export function* fetchUserName(loader){
 export function* updateUserRowInfo (){
     console.log("hit on saga update")
     const selectedRowData = yield select(makeSelectUpdateAbleUserData());
-    console.log("user provided updatee data", selectedRowData);
-    console.log("selected rowdata", selectedRowData);
-    const id = selectedRowData.id
+    const id = selectedRowData.id;
     const basicUpdateData = {
-    //   "id": id,
-      "first_name": selectedRowData.first_name,
-      "last_name": selectedRowData.last_name,
-      "age": selectedRowData.age,
-      "occupation": selectedRowData.occupation,
+      id: id,
+      first_name: selectedRowData.first_name,
+      last_name: selectedRowData.last_name,
+      age: selectedRowData.age,
+      occupation: selectedRowData.occupation,
     };
-      const requestURL = `http://localhost:8082/update/${id}`;
+      const requestURL = `http://localhost:8082/save`;
       const options = {
-        method: "PUT",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
@@ -51,14 +51,43 @@ export function* updateUserRowInfo (){
          const response = yield call((e)=>fetch(requestURL,
             options
             ));
+        console.log("hit on after update")
+         yield fetchUserName("sending data from update").next()
+         console.log("end fetch call");
          const data = yield response.json();
          console.log("result",data);
+        
+        yield put(updatePostUserRow(response));
+    }catch(e){
+        console.log(e);
+    }
+}
+export function* deleteUserRowInfo(){
+    const selectedRowData = yield select(makeSelectUpdateAbleUserData());
+    const allData = yield select(makeSelectDeleteRow())
+    console.log("allData", allData.id)
+    const id = allData.id;
+    const requestURL = `http://localhost:8082/delete/${id}`;
+    const options = {
+        method: "DELETE",
+        headers: {
+            "Content-type" : "application/json"
+        },
+        body: ''
+    }
+    try{
+         const response = yield call((e) => fetch(requestURL,
+            options
+            ));
+         const data = yield response.json();
+         console.log("Delete result.......",data);
         yield put(updatePostUserRow(response));
     }catch(e){
         console.log(e);
     }
 }
 export function* defaultSaga() {
-  yield fetchUserName(true);
+  yield fetchUserName();
   yield takeLatest(UPDATE_USER_ROW_DATA, updateUserRowInfo);
+  yield takeLatest(DELETE_ONE_USER, deleteUserRowInfo);
 }
