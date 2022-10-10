@@ -1,25 +1,23 @@
-import logo from './logo.svg';
-import './App.css';
-
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import React from 'react';
+import Counter from './component/home';
+import "./App.css";
+import "primeflex/primeflex.css";
+class App extends React.Component{
+  render(){
+    return (
+      <div className="grid">
+        <div className="col-12">
+          <h2>بسم اله الرحمن الرحيم</h2>
+          <Counter />
+        </div>
+      </div>
+      // <div class="grid">
+      //   <div class="col">1</div>
+      //   <div class="col">2</div>
+      //   <div class="col">3</div>
+      // </div>
+    );
+  }
 }
 
 export default App;

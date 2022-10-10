@@ -1,0 +1,6 @@
+export const FETCHAPI = 'FETCHAPI';
+export const ROWDATA = 'ROWDATA';
+export const UPDATE_VISIBLE = 'UPDATE_VISIBLE';
+export const UPDATE_VISIBLE_OFF = "UPDATE_VISIBLE_OFF";
+export const UPDATE_USER_ROW_DATA = "UPDATE_USER_ROW_DATA";
+export const GET_POSTS = "GET_POSTS";
