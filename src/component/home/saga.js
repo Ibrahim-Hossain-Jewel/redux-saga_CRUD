@@ -1,11 +1,16 @@
 import { put, select, call, takeLatest, cancel } from "redux-saga/effects"; 
-import { setFetchApiAction, updatePostUserRow } from "./action";
+import {
+  setFetchApiAction,
+  updatePostUserRow,
+  setSaveResponse,
+} from "./action";
 import {
   makeSelectUpdateAbleUserData,
   makeSelectUserRowData,
   makeSelectDeleteRow,
+  makeSelectSaveData,
 } from "./selector";
-import { DELETE_ONE_USER, UPDATE_USER_ROW_DATA } from "./constant";
+import { DELETE_ONE_USER, SAVE_DATA_PASS, UPDATE_USER_ROW_DATA } from "./constant";
 export function* fetchUserName(loader){
     console.log("hi"+loader);
   try {
@@ -26,7 +31,33 @@ export function* fetchUserName(loader){
     console.log(e);
   }
 }
+export function* saveNewUser (){
+  let newUserData = yield select(makeSelectSaveData());
+  console.log("from saga", newUserData);
+  let basicData = {
+    first_name: newUserData.first_name,
+    last_name: newUserData.last_name,
+    age: newUserData.age,
+    occupation: newUserData.occupation
+  }
+  let requestUrl = "http://localhost:8082/save";
+  let options = {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify(basicData),
+  };
+  try{
+    let response = yield call(e => fetch(requestUrl, options));
+    console.log("save response data", response);
+    yield put(setSaveResponse(response))
+    yield*  fetchUserName()
+  }catch(e){
+    console.log(e)
+  }
 
+}
 // writing code for update user
 export function* updateUserRowInfo (){
     console.log("hit on saga update")
@@ -52,7 +83,7 @@ export function* updateUserRowInfo (){
             options
             ));
         console.log("hit on after update")
-         yield fetchUserName("sending data from update").next()
+         yield* fetchUserName()
          console.log("end fetch call");
          const data = yield response.json();
          console.log("result",data);
@@ -73,21 +104,25 @@ export function* deleteUserRowInfo(){
         headers: {
             "Content-type" : "application/json"
         },
-        body: ''
+        body: JSON.stringify(id)
     }
     try{
          const response = yield call((e) => fetch(requestURL,
             options
             ));
+            yield put(setSaveResponse(response))
+            yield* fetchUserName();
          const data = yield response.json();
          console.log("Delete result.......",data);
         yield put(updatePostUserRow(response));
+        
     }catch(e){
         console.log(e);
     }
 }
 export function* defaultSaga() {
   yield fetchUserName();
+  yield takeLatest(SAVE_DATA_PASS, saveNewUser);
   yield takeLatest(UPDATE_USER_ROW_DATA, updateUserRowInfo);
   yield takeLatest(DELETE_ONE_USER, deleteUserRowInfo);
 }

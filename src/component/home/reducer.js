@@ -7,6 +7,11 @@ import {
   DELETE_ROW_DATA,
   DELETE_VISIBLE,
   DELETE_INVISIBLE,
+  ADD_VISIBLE,
+  ADD_INVISIBLE,
+  SAVE_DATA_PASS,
+  SAVE_RESPONSE,
+  DELETE_RESPONSE,
 } from "./constant";
 import { fromJS } from "immutable";
 //react immutable library for state container
@@ -17,6 +22,16 @@ const initialState = fromJS({
 
 export const counterReducer = (state = initialState, action)=>{
     switch (action.type) {
+      case SAVE_RESPONSE: 
+        return state.set("saveResponse", action.saveResponse);
+      case DELETE_RESPONSE: 
+        return state.set("deleteResponse", action.deleteResponse);
+      case SAVE_DATA_PASS: 
+        return state.set("saveUserPreparedData", action.savePreparedData);
+      case ADD_VISIBLE: 
+        return state.set("addVisible", true)
+      case ADD_INVISIBLE: 
+        return state.set("addVisible", false);
       case FETCHAPI:
         return state.set("ApiUserData", action.list);
       case ROWDATA:

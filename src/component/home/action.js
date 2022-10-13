@@ -9,7 +9,50 @@ import {
   DELETE_ROW_DATA,
   DELETE_VISIBLE,
   DELETE_INVISIBLE,
+  ADD_VISIBLE,
+  ADD_INVISIBLE,
+  SAVE_DATA_PASS,
+  SAVE_RESPONSE,
+  UPDATE_RESPONSE,
+  DELETE_RESPONSE
 } from "./constant";
+export const setUpdateResponse = (updateResponse)=>{
+  return {
+    type: UPDATE_RESPONSE,
+    updateResponse,
+  };
+}
+export const setDeleteResponse = (deleteResponse)=>{
+  console.log("lkjflksjdfl..............", deleteResponse)
+  return {
+    type: DELETE_RESPONSE,
+    deleteResponse
+  }
+}
+export const setSaveDataPass = (savePreparedData) =>{
+  console.log("savePreparedData", savePreparedData);
+  return {
+    type: SAVE_DATA_PASS,
+    savePreparedData,
+  };
+}
+export const setSaveResponse = (saveResponse) =>{
+  console.log("save response", saveResponse);
+  return{
+    type: SAVE_RESPONSE,
+    saveResponse
+  }
+}
+export const setAddVisible = ()=>{
+  return{
+    type: ADD_VISIBLE
+  }
+}
+export const setAddInvisible = ()=>{
+  return{
+    type: ADD_INVISIBLE
+  }
+}
 export const setFetchApiAction = (list) => {
   return {
     type: FETCHAPI,

@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Dialog } from "primereact/dialog";
-import { ConfirmDialog } from "primereact/confirmdialog";
+import { Toast } from "primereact/toast";
 import { InputText } from "primereact/inputtext";
 import { InputNumber } from 'primereact/inputnumber';
 import {createStructuredSelector} from 'reselect';
@@ -11,8 +11,10 @@ import {
   makeSelectAllUserData,
   makeSelectUserRowData,
   makeSelectUpdateVisible,
-  makeSelectUpdateAbleUserData,
   makeSelectDeleteRowDialogVisible,
+  makeSelectAddRowDialogVisible,
+  makeSelectSaveResponse,
+  makeSelectDeleteResponse,
 } from "./selector";
 import { Button } from "primereact/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -29,6 +31,10 @@ import {
   setDeleteVisible,
   setDeleteInvisible,
   deleteUserRowData,
+  setAddInvisible,
+  setAddVisible,
+  setSaveDataPass,
+  setSaveResponse,
 } from "./action";
 
 class UserDataInfo extends React.Component {
@@ -40,30 +46,35 @@ class UserDataInfo extends React.Component {
       updatefirstname: "",
       updatelastname: "",
       updateAge: "",
-      updateOccupation: ""
+      updateOccupation: "",
+      //add
+      addFirstName: "",
+      addLastName: "",
+      addAge: "",
+      addOccupation: "",
+      //ERROR
+      setErrorMessage: ''
     };
   }
   //for update handler
-  firstNameHandler = (evt)=>{
+  firstNameHandler = (evt) => {
     this.setState({ updatefirstname: evt.target.value });
-  }
-  lastNameHandler = (evt) =>{
+  };
+  lastNameHandler = (evt) => {
     this.setState({ updatelastname: evt.target.value });
-  }
-  ageHandler = (evt)=>{
-    console.log(evt.value)
+  };
+  ageHandler = (evt) => {
+    console.log(evt.value);
     this.setState({ updateAge: evt.value });
-  }
-  occupationHandler = (evt) =>{
-    this.setState({updateOccupation: evt.target.value});
-  }
+  };
+  occupationHandler = (evt) => {
+    this.setState({ updateOccupation: evt.target.value });
+  };
   updateHandler = (row, rowData) => {
     this.props.sentRowData(rowData);
   };
   postHandler = () => {
-    console.log(
-      "hit on post handler"
-    );
+    console.log("hit on post handler");
     let basicData = {
       id: this.props.rowData.id,
       first_name: this.state.updatefirstname,
@@ -75,12 +86,74 @@ class UserDataInfo extends React.Component {
     this.props.onChangeUpdateVisibleHandler();
   };
 
-  deleteHandler = (evt, rowData)=>{
+  deleteHandler = (evt, rowData) => {
     console.log("hit on delete handler", rowData);
     this.props.sentDeleteRowData(rowData);
+  };
+  addHandler = (evt) => {
+    console.log("hit on add handler");
+    this.props.onchangeAddDialogVisible();
+  };
+  submitSavePostHandler = () =>{
+    let basicData = {
+      first_name: this.state.addFirstName,
+      last_name: this.state.addLastName,
+      age: this.state.addAge,
+      occupation: this.state.addOccupation,
+    };
+    console.log("hit on ", basicData)
+    if(this.state.addFirstName && this.state.addLastName && this.state.addOccupation){
+      this.props.onChangeSavePassAbleData(basicData);
+      try {
+        if (
+          this.props.saveResponse !== "" &&
+          this.props.saveResponse.status === 200
+        ) {
+          this.toast.show({
+            severity: "success",
+            summary: "Personal Information",
+            detail: "Successfully",
+            life: 3000,
+          });
+          this.setState({ setErrorMessage: "" });
+          this.setState({addFirstName: '', addLastName: '', addOccupation: ''});
+          this.props.onchangeAddDialogInvisible();
+        } else {
+          this.toast.show({
+            severity: "error",
+            summary: "Personal Information",
+            detail: "Failed",
+          });
+        }
+      } catch (e) {
+        console.log("Unable to send");
+      }
+    }
+    else{
+      this.setState({ setErrorMessage: "p-invalid block" });
+      this.toast.show({
+        severity: "error",
+        summary: "Personal Information",
+        detail: "Fill-Up All Required field",
+      });
+    }
+  }
+  addFirstNameHandler = (evt) =>{
+    if(this.state.addFirstName != undefined){
+      this.setState({ addFirstName: evt.target.value });
+    }
+  }
+  addLastNameHandler = (evt)=>{
+    this.setState({addLastName: evt.target.value});
+  }
+  addAgeHandler = (evt) =>{
+    this.setState({ addAge: evt.value});
+  }
+  addOccupationHandler = (evt) =>{
+    this.setState({addOccupation: evt.target.value});
   }
   render() {
-    console.log("home props", this.props);
+    console.log("home props",this.props);
     var rowDataUpdateFirstName = "";
     var occupation = "";
     if (this.props.rowData) {
@@ -102,16 +175,28 @@ class UserDataInfo extends React.Component {
           <FontAwesomeIcon icon={faTrash} />
         </Button>
       );
-      return <div>
-        {update}
-        {deleteBtn}
-      </div>;
+      return (
+        <div>
+          {update}
+          {deleteBtn}
+        </div>
+      );
     };
     return (
       <div className="grid">
+        <Toast ref={(el) => (this.toast = el)} />
         <div className="col-12">
           <div className="datatable-templating-demo">
+            <div className="p-inputgroup">
+              <Button
+                label="Add User"
+                icon="pi pi-check"
+                iconPos="right"
+                onClick={this.addHandler}
+              />
+            </div>
             <h2>Person Information table</h2>
+
             <DataTable value={this.props.users}>
               <Column
                 header="ID"
@@ -122,9 +207,74 @@ class UserDataInfo extends React.Component {
               <Column field="last_name" header="Last Name" />
               <Column field="age" header="Ages" />
               <Column field="occupation" header="Occupation" />
-              <Column field="" header="Edit" body={showIcon} />
+              <Column field="" header="Action" body={showIcon} />
             </DataTable>
           </div>
+          {/*Add user row*/}
+          <Dialog
+            header="Add User"
+            visible={this.props.addVisible}
+            onHide={this.props.onchangeAddDialogInvisible}
+            breakpoints={{ "960px": "75vw" }}
+            style={{ width: "50vw" }}
+          >
+            <div className="grid">
+              <div className="col-12 md:col-12">
+                <div className="p-inputgroup">
+                  <span className="p-inputgroup-addon">
+                    <i className="pi pi-user"></i>
+                  </span>
+                  <InputText
+                    placeholder="Firstname"
+                    onChange={this.addFirstNameHandler}
+                    className={this.state.setErrorMessage}
+                  />
+                </div>
+              </div>
+              <div className="col-12 md:col-12">
+                <div className="p-inputgroup">
+                  <span className="p-inputgroup-addon">
+                    <i className="pi pi-user"></i>
+                  </span>
+                  <InputText
+                    placeholder="Lastname"
+                    onChange={this.addLastNameHandler}
+                    className={this.state.setErrorMessage}
+                  />
+                </div>
+              </div>
+              <div className="col-12 md:col-12">
+                <div className="p-inputgroup">
+                  <span className="p-inputgroup-addon">Age</span>
+                  <InputNumber
+                    placeholder="Age"
+                    onChange={this.addAgeHandler}
+                  />
+                </div>
+              </div>
+              <div className="col-12 md:col-12">
+                <div className="p-inputgroup">
+                  <span className="p-inputgroup-addon">Occupation</span>
+                  <InputText
+                    placeholder="Occupation"
+                    onChange={this.addOccupationHandler}
+                    className={this.state.setErrorMessage}
+                  />
+                </div>
+              </div>
+              <div className="col-12 md:col-12">
+                <div className="p-inputgroup">
+                  <Button
+                    label="Submit"
+                    icon="pi pi-check"
+                    iconPos="right"
+                    onClick={this.submitSavePostHandler}
+                  />
+                </div>
+              </div>
+            </div>
+          </Dialog>
+
           <Dialog
             header="Update User"
             visible={this.props.updateVisible}
@@ -228,21 +378,37 @@ UserDataInfo.propTypes = {
   sentDeleteRowData: PropTypes.func,
   deleteVisible: PropTypes.bool,
   onChangeDeleteDialogInvisible: PropTypes.func,
-  onChangeDeleteOperation: PropTypes.func
+  onChangeDeleteOperation: PropTypes.func,
+  onchangeAddDialogInvisible: PropTypes.func,
+  onChangeSavePassAbleData: PropTypes.func,
+  saveResponse: PropTypes.any
 };
 const mapStateToProps = createStructuredSelector({
   users: makeSelectAllUserData(),
   rowData: makeSelectUserRowData(),
   updateVisible: makeSelectUpdateVisible(),
   deleteVisible: makeSelectDeleteRowDialogVisible(),
-  
+  addVisible: makeSelectAddRowDialogVisible(),
+  saveResponse: makeSelectSaveResponse(),
+  deleteRespnse: makeSelectDeleteResponse()
 });
 
 const mapDispatchToProps = (dispatch)=>{
     return {
       dispatch,
+      onChangeSavePassAbleData: (evt)=>{
+        dispatch(setSaveDataPass(evt));
+      },
+      onchangeAddDialogInvisible: ()=>{
+        dispatch(setAddInvisible());
+      },
+      onchangeAddDialogVisible: () =>{
+        dispatch(setAddVisible());
+      },
+      //end save operation
       onChangeDeleteOperation: (evt) =>{
         dispatch(deleteUserRowData());
+        dispatch(setDeleteInvisible());
       },
       sentDeleteRowData : (evt) =>{
         dispatch(setDeleteRowData(evt));
