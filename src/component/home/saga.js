@@ -3,6 +3,8 @@ import {
   setFetchApiAction,
   updatePostUserRow,
   setSaveResponse,
+  setDeleteResponse,
+  setUpdateResponse,
 } from "./action";
 import {
   makeSelectUpdateAbleUserData,
@@ -83,6 +85,7 @@ export function* updateUserRowInfo (){
             options
             ));
         console.log("hit on after update")
+        yield put(setUpdateResponse(response.status))
          yield* fetchUserName()
          console.log("end fetch call");
          const data = yield response.json();
@@ -110,7 +113,7 @@ export function* deleteUserRowInfo(){
          const response = yield call((e) => fetch(requestURL,
             options
             ));
-            yield put(setSaveResponse(response))
+            yield put(setDeleteResponse(response.status));
             yield* fetchUserName();
          const data = yield response.json();
          console.log("Delete result.......",data);

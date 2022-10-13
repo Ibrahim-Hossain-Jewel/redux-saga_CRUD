@@ -102,8 +102,19 @@ class UserDataInfo extends React.Component {
       occupation: this.state.addOccupation,
     };
     console.log("hit on ", basicData)
-    if(this.state.addFirstName && this.state.addLastName && this.state.addOccupation){
+    if (
+      this.state.addFirstName != "" &&
+      this.state.addLastName != "" &&
+      this.state.addOccupation != ""
+    ) {
       this.props.onChangeSavePassAbleData(basicData);
+      this.setState({ setErrorMessage: "" });
+      this.setState({
+        addFirstName: "",
+        addLastName: "",
+        addOccupation: "",
+        addAge: "",
+      });
       try {
         if (
           this.props.saveResponse !== "" &&
@@ -116,7 +127,12 @@ class UserDataInfo extends React.Component {
             life: 3000,
           });
           this.setState({ setErrorMessage: "" });
-          this.setState({addFirstName: '', addLastName: '', addOccupation: ''});
+          this.setState({
+            addFirstName: "",
+            addLastName: "",
+            addOccupation: "",
+            addAge: ""
+          });
           this.props.onchangeAddDialogInvisible();
         } else {
           this.toast.show({
@@ -126,10 +142,9 @@ class UserDataInfo extends React.Component {
           });
         }
       } catch (e) {
-        console.log("Unable to send");
+        console.log(e);
       }
-    }
-    else{
+    } else {
       this.setState({ setErrorMessage: "p-invalid block" });
       this.toast.show({
         severity: "error",
@@ -152,8 +167,29 @@ class UserDataInfo extends React.Component {
   addOccupationHandler = (evt) =>{
     this.setState({addOccupation: evt.target.value});
   }
+  deleteYes = (evt)=>{
+    console.log("delte yes", evt)
+    this.props.onChangeDeleteOperation();
+    console.log("delete yes", this.props.deleteRespnse)
+    if (this.props.deleteRespnse != '' || this.props.deleteRespnse === 200) {
+      console.log("done the process");
+      this.toast.show({
+        severity: "success",
+        summary: "Personal Information",
+        detail: "Successfully",
+        life: 3000,
+      });
+    } else {
+      this.toast.show({
+        severity: "error",
+        summary: "Personal Information",
+        detail: "Failed",
+        life: 3000,
+      });
+    }
+  }
   render() {
-    console.log("home props",this.props);
+    console.log("home props",this.state);
     var rowDataUpdateFirstName = "";
     var occupation = "";
     if (this.props.rowData) {
@@ -356,7 +392,7 @@ class UserDataInfo extends React.Component {
                   <Button
                     label="Yes"
                     icon="pi pi-check"
-                    onClick={() => this.props.onChangeDeleteOperation()}
+                    onClick={this.deleteYes}
                     autoFocus
                   />
                 </div>
@@ -398,6 +434,7 @@ const mapDispatchToProps = (dispatch)=>{
       dispatch,
       onChangeSavePassAbleData: (evt)=>{
         dispatch(setSaveDataPass(evt));
+        dispatch(setAddInvisible());
       },
       onchangeAddDialogInvisible: ()=>{
         dispatch(setAddInvisible());

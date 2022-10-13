@@ -17,6 +17,7 @@ import {
   DELETE_RESPONSE
 } from "./constant";
 export const setUpdateResponse = (updateResponse)=>{
+  console.log("update response......", updateResponse)
   return {
     type: UPDATE_RESPONSE,
     updateResponse,

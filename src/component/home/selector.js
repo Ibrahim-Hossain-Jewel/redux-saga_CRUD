@@ -41,8 +41,13 @@ const makeSelectDeleteResponse = () =>
   createSelector(counterModulesActivityLogDomain, (substate) =>
     substate.get("deleteResponse")
   );
+const makeSelectUpdateResponse = () =>
+  createSelector(counterModulesActivityLogDomain, (substate) =>
+    substate.get("updateResponse")
+  );
   export {counterModulesActivityLogDomain,
     makeSelectDeleteResponse,
+    makeSelectUpdateResponse,
     makeSelectSaveData,
     makeSelectSaveResponse,
     makeSelectAddRowDialogVisible,
