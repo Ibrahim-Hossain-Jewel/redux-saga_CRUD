@@ -15,6 +15,7 @@ import {
   makeSelectAddRowDialogVisible,
   makeSelectSaveResponse,
   makeSelectDeleteResponse,
+  makeSelectUpdateResponse,
 } from "./selector";
 import { Button } from "primereact/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -35,6 +36,7 @@ import {
   setAddVisible,
   setSaveDataPass,
   setSaveResponse,
+  setUpdateResponse,
 } from "./action";
 
 class UserDataInfo extends React.Component {
@@ -57,20 +59,30 @@ class UserDataInfo extends React.Component {
     };
   }
   //for update handler
-  firstNameHandler = (evt) => {
-    this.setState({ updatefirstname: evt.target.value });
+  firstNameUpdateHandler = (evt) => {
+    console.log("evt..........", evt.target.value)
+      this.setState({ updatefirstname: evt.target.value });
+      if(this.state.updatefirstname != ''){
+        this.setState({ setErrorMessage: "" });
+      }
   };
   lastNameHandler = (evt) => {
     this.setState({ updatelastname: evt.target.value });
+    if(this.state.updatelastname !=''){
+      this.setState({ setErrorMessage: "" });
+    }
   };
   ageHandler = (evt) => {
-    console.log(evt.value);
     this.setState({ updateAge: evt.value });
   };
   occupationHandler = (evt) => {
     this.setState({ updateOccupation: evt.target.value });
+    if(this.state.updateOccupation != ''){
+      this.setState({setErrorMessage: ''})
+    }
   };
   updateHandler = (row, rowData) => {
+    console.log("hit")
     this.props.sentRowData(rowData);
   };
   postHandler = () => {
@@ -82,8 +94,47 @@ class UserDataInfo extends React.Component {
       age: this.state.updateAge,
       occupation: this.state.updateOccupation,
     };
-    this.props.onChangeUpdateUserRowData(basicData);
-    this.props.onChangeUpdateVisibleHandler();
+    if(this.state.updatefirstname != '' && this.state.updatelastname != '' && this.state.updateOccupation != ''){
+      this.props.onChangeUpdateUserRowData(basicData);
+      this.setState({updatefirstname: '', updatelastname: '', updateAge: '', updateOccupation: ''});
+      setTimeout(() => {
+        try {
+          if (
+            this.props.updateResponse != "" &&
+            this.props.updateResponse === 200
+          ) {
+            this.toast.show({
+              severity: "success",
+              summary: "Update",
+              detail: "Success",
+              life: 3000,
+            });
+            this.props.onChangeUpdateVisibleHandler();
+          } else {
+            this.setState({ setErrorMessage: "p-invalid block" });
+            this.toast.show({
+              severity: "error",
+              summary: "Personal Information",
+              detail: "Failed",
+            });
+          }
+        } catch (e) {
+          this.setState({ setErrorMessage: "p-invalid block" });
+          this.toast.show({
+            severity: "error",
+            summary: "Failed",
+            detail: "Check your internet connection",
+          });
+        }
+      }, 10);
+    }else{
+      this.setState({ setErrorMessage: "p-invalid block" });
+      this.toast.show({
+        severity: "error",
+        summary: "Required",
+        detail: "You need fill up all required fields",
+      });
+    }
   };
 
   deleteHandler = (evt, rowData) => {
@@ -101,7 +152,6 @@ class UserDataInfo extends React.Component {
       age: this.state.addAge,
       occupation: this.state.addOccupation,
     };
-    console.log("hit on ", basicData)
     if (
       this.state.addFirstName != "" &&
       this.state.addLastName != "" &&
@@ -115,81 +165,92 @@ class UserDataInfo extends React.Component {
         addOccupation: "",
         addAge: "",
       });
-      try {
-        if (
-          this.props.saveResponse !== "" &&
-          this.props.saveResponse.status === 200
-        ) {
-          this.toast.show({
-            severity: "success",
-            summary: "Personal Information",
-            detail: "Successfully",
-            life: 3000,
-          });
-          this.setState({ setErrorMessage: "" });
-          this.setState({
-            addFirstName: "",
-            addLastName: "",
-            addOccupation: "",
-            addAge: ""
-          });
-          this.props.onchangeAddDialogInvisible();
-        } else {
+      setTimeout(() => {
+        try {
+          if (
+            this.props.saveResponse !== "" &&
+            this.props.saveResponse.status === 200
+          ) {
+            this.toast.show({
+              severity: "success",
+              summary: "Add",
+              detail: "Success",
+              life: 3000,
+            });
+            this.setState({ setErrorMessage: "" });
+            this.setState({
+              addFirstName: "",
+              addLastName: "",
+              addOccupation: "",
+              addAge: "",
+            });
+            this.props.onchangeAddDialogInvisible();
+          } else {
+            this.toast.show({
+              severity: "error",
+              summary: "Add",
+              detail: "Failed",
+            });
+          }
+        } catch (e) {
           this.toast.show({
             severity: "error",
-            summary: "Personal Information",
-            detail: "Failed",
+            summary: "API Failed",
+            detail: "Check your internet connection",
           });
         }
-      } catch (e) {
-        console.log(e);
-      }
+      }, 10);
     } else {
       this.setState({ setErrorMessage: "p-invalid block" });
       this.toast.show({
         severity: "error",
-        summary: "Personal Information",
-        detail: "Fill-Up All Required field",
+        summary: "Required",
+        detail: "You need fill up all required fields",
       });
     }
   }
   addFirstNameHandler = (evt) =>{
+    this.setState({ addFirstName: evt.target.value });
     if(this.state.addFirstName != undefined){
-      this.setState({ addFirstName: evt.target.value });
+      this.setState({setErrorMessage: ""})
     }
   }
   addLastNameHandler = (evt)=>{
     this.setState({addLastName: evt.target.value});
+    if(this.state.addLastName != undefined){
+      this.setState({ setErrorMessage: "" });
+    }
   }
   addAgeHandler = (evt) =>{
     this.setState({ addAge: evt.value});
   }
   addOccupationHandler = (evt) =>{
     this.setState({addOccupation: evt.target.value});
+    if(this.state.addOccupation != undefined){
+      this.setState({ setErrorMessage: "" });
+    }
   }
   deleteYes = (evt)=>{
-    console.log("delte yes", evt)
     this.props.onChangeDeleteOperation();
-    console.log("delete yes", this.props.deleteRespnse)
     if (this.props.deleteRespnse != '' || this.props.deleteRespnse === 200) {
       console.log("done the process");
       this.toast.show({
         severity: "success",
-        summary: "Personal Information",
-        detail: "Successfully",
+        summary: "Delete",
+        detail: "Success",
         life: 3000,
       });
     } else {
       this.toast.show({
         severity: "error",
-        summary: "Personal Information",
+        summary: "Delete",
         detail: "Failed",
         life: 3000,
       });
     }
   }
   render() {
-    console.log("home props",this.state);
+    console.log("home props", this.props.updateResponse);
     var rowDataUpdateFirstName = "";
     var occupation = "";
     if (this.props.rowData) {
@@ -235,7 +296,7 @@ class UserDataInfo extends React.Component {
 
             <DataTable value={this.props.users}>
               <Column
-                header="ID"
+                header="Serial"
                 headerStyle={{ width: "3em" }}
                 body={(data, options) => options.rowIndex + 1}
               ></Column>
@@ -311,6 +372,7 @@ class UserDataInfo extends React.Component {
             </div>
           </Dialog>
 
+          {/*Update section*/}
           <Dialog
             header="Update User"
             visible={this.props.updateVisible}
@@ -328,7 +390,8 @@ class UserDataInfo extends React.Component {
                   </span>
                   <InputText
                     placeholder="Firstname"
-                    onChange={this.firstNameHandler}
+                    onChange={this.firstNameUpdateHandler}
+                    className={this.state.setErrorMessage}
                   />
                 </div>
               </div>
@@ -340,6 +403,7 @@ class UserDataInfo extends React.Component {
                   <InputText
                     placeholder="Lastname"
                     onChange={this.lastNameHandler}
+                    className={this.state.setErrorMessage}
                   />
                 </div>
               </div>
@@ -355,6 +419,7 @@ class UserDataInfo extends React.Component {
                   <InputText
                     placeholder="Occupation"
                     onChange={this.occupationHandler}
+                    className={this.state.setErrorMessage}
                   />
                 </div>
               </div>
@@ -417,7 +482,9 @@ UserDataInfo.propTypes = {
   onChangeDeleteOperation: PropTypes.func,
   onchangeAddDialogInvisible: PropTypes.func,
   onChangeSavePassAbleData: PropTypes.func,
-  saveResponse: PropTypes.any
+  saveResponse: PropTypes.any,
+  updateResponse: PropTypes.number,
+  deleteRespnse: PropTypes.number 
 };
 const mapStateToProps = createStructuredSelector({
   users: makeSelectAllUserData(),
@@ -426,7 +493,8 @@ const mapStateToProps = createStructuredSelector({
   deleteVisible: makeSelectDeleteRowDialogVisible(),
   addVisible: makeSelectAddRowDialogVisible(),
   saveResponse: makeSelectSaveResponse(),
-  deleteRespnse: makeSelectDeleteResponse()
+  deleteRespnse: makeSelectDeleteResponse(),
+  updateResponse: makeSelectUpdateResponse(),
 });
 
 const mapDispatchToProps = (dispatch)=>{
@@ -435,6 +503,7 @@ const mapDispatchToProps = (dispatch)=>{
       onChangeSavePassAbleData: (evt)=>{
         dispatch(setSaveDataPass(evt));
         dispatch(setAddInvisible());
+        // dispatch(setUpdateResponse())
       },
       onchangeAddDialogInvisible: ()=>{
         dispatch(setAddInvisible());

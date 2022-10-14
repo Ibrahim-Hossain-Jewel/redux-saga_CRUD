@@ -12,6 +12,7 @@ import {
   SAVE_DATA_PASS,
   SAVE_RESPONSE,
   DELETE_RESPONSE,
+  UPDATE_RESPONSE,
 } from "./constant";
 import { fromJS } from "immutable";
 //react immutable library for state container
@@ -22,6 +23,8 @@ const initialState = fromJS({
 
 export const counterReducer = (state = initialState, action)=>{
     switch (action.type) {
+      case UPDATE_RESPONSE:
+        return state.set("updateResponse", action.updateResponse);
       case SAVE_RESPONSE: 
         return state.set("saveResponse", action.saveResponse);
       case DELETE_RESPONSE: 

@@ -17,28 +17,24 @@ import {
   DELETE_RESPONSE
 } from "./constant";
 export const setUpdateResponse = (updateResponse)=>{
-  console.log("update response......", updateResponse)
   return {
     type: UPDATE_RESPONSE,
     updateResponse,
   };
 }
 export const setDeleteResponse = (deleteResponse)=>{
-  console.log("lkjflksjdfl..............", deleteResponse)
   return {
     type: DELETE_RESPONSE,
     deleteResponse
   }
 }
 export const setSaveDataPass = (savePreparedData) =>{
-  console.log("savePreparedData", savePreparedData);
   return {
     type: SAVE_DATA_PASS,
     savePreparedData,
   };
 }
 export const setSaveResponse = (saveResponse) =>{
-  console.log("save response", saveResponse);
   return{
     type: SAVE_RESPONSE,
     saveResponse
@@ -94,7 +90,6 @@ export const deleteUserRowData = () =>{
   }
 }
 export const setDeleteRowData = (deleteRow)=>{
-  console.log("delete row data", deleteRow);
   return {
     type: DELETE_ROW_DATA,
     deleteRow

@@ -14,7 +14,6 @@ import {
 } from "./selector";
 import { DELETE_ONE_USER, SAVE_DATA_PASS, UPDATE_USER_ROW_DATA } from "./constant";
 export function* fetchUserName(loader){
-    console.log("hi"+loader);
   try {
     const requestUrl = "http://localhost:8082/users";
     const options = {
@@ -35,7 +34,6 @@ export function* fetchUserName(loader){
 }
 export function* saveNewUser (){
   let newUserData = yield select(makeSelectSaveData());
-  console.log("from saga", newUserData);
   let basicData = {
     first_name: newUserData.first_name,
     last_name: newUserData.last_name,
@@ -52,7 +50,6 @@ export function* saveNewUser (){
   };
   try{
     let response = yield call(e => fetch(requestUrl, options));
-    console.log("save response data", response);
     yield put(setSaveResponse(response))
     yield*  fetchUserName()
   }catch(e){
@@ -62,7 +59,6 @@ export function* saveNewUser (){
 }
 // writing code for update user
 export function* updateUserRowInfo (){
-    console.log("hit on saga update")
     const selectedRowData = yield select(makeSelectUpdateAbleUserData());
     const id = selectedRowData.id;
     const basicUpdateData = {
@@ -84,13 +80,9 @@ export function* updateUserRowInfo (){
          const response = yield call((e)=>fetch(requestURL,
             options
             ));
-        console.log("hit on after update")
         yield put(setUpdateResponse(response.status))
          yield* fetchUserName()
-         console.log("end fetch call");
-         const data = yield response.json();
-         console.log("result",data);
-        
+        //  const data = yield response.json();
         yield put(updatePostUserRow(response));
     }catch(e){
         console.log(e);
@@ -99,7 +91,6 @@ export function* updateUserRowInfo (){
 export function* deleteUserRowInfo(){
     const selectedRowData = yield select(makeSelectUpdateAbleUserData());
     const allData = yield select(makeSelectDeleteRow())
-    console.log("allData", allData.id)
     const id = allData.id;
     const requestURL = `http://localhost:8082/delete/${id}`;
     const options = {
@@ -115,8 +106,7 @@ export function* deleteUserRowInfo(){
             ));
             yield put(setDeleteResponse(response.status));
             yield* fetchUserName();
-         const data = yield response.json();
-         console.log("Delete result.......",data);
+        //  const data = yield response.json();
         yield put(updatePostUserRow(response));
         
     }catch(e){
