@@ -1,11 +1,12 @@
-# Getting Started with Create React App
+# Getting Started with CRUD React Redux Redux-saga App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
 
 In the project directory, you can run:
-
+### `Node Version`
+v14.17.0
 ### `npm start`
 
 Runs the app in the development mode.\
