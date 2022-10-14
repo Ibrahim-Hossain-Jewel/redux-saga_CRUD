@@ -5,20 +5,27 @@ import "primeicons/primeicons.css";
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.css";
 import "primeflex/primeflex.css";
+import { BrowserRouter as Router, Route, Switch} from 'react-router-dom';
+import Welcome from './component/Welcome';
 class App extends React.Component{
-  render(){
+  render(){ 
     return (
-      <div className="grid">
-        <div className="col-12">
-          <h2>بسم اله الرحمن الرحيم</h2>
-          <Counter />
+      <Router>
+        <div className="grid">
+          <div className="col-12">
+            <h2 className='bismillha' style={{textAlign: "right"}}>بسم اله الرحمن الرحيم</h2>
+            <Switch>
+              <Route path="/" exact>
+                 <Welcome />
+              </Route>
+              
+              <Route path="/crud" exact>
+                <Counter />
+              </Route>
+            </Switch>
+          </div>
         </div>
-      </div>
-      // <div class="grid">
-      //   <div class="col">1</div>
-      //   <div class="col">2</div>
-      //   <div class="col">3</div>
-      // </div>
+      </Router>
     );
   }
 }

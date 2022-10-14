@@ -34,11 +34,9 @@ import {
   deleteUserRowData,
   setAddInvisible,
   setAddVisible,
-  setSaveDataPass,
-  setSaveResponse,
-  setUpdateResponse,
+  setSaveDataPass
 } from "./action";
-
+import TopNav from "../TopNav";
 class UserDataInfo extends React.Component {
   constructor() {
     super();
@@ -49,12 +47,10 @@ class UserDataInfo extends React.Component {
       updatelastname: "",
       updateAge: "",
       updateOccupation: "",
-      //add
       addFirstName: "",
       addLastName: "",
       addAge: "",
       addOccupation: "",
-      //ERROR
       setErrorMessage: ''
     };
   }
@@ -283,6 +279,7 @@ class UserDataInfo extends React.Component {
       <div className="grid">
         <Toast ref={(el) => (this.toast = el)} />
         <div className="col-12">
+          <TopNav />
           <div className="datatable-templating-demo">
             <div className="p-inputgroup">
               <Button
@@ -371,7 +368,6 @@ class UserDataInfo extends React.Component {
               </div>
             </div>
           </Dialog>
-
           {/*Update section*/}
           <Dialog
             header="Update User"
@@ -435,7 +431,6 @@ class UserDataInfo extends React.Component {
               </div>
             </div>
           </Dialog>
-
           {/*for delete options*/}
           <Dialog
             header="Delete Confirmation"

@@ -1,4 +1,4 @@
-import { put, select, call, takeLatest, cancel } from "redux-saga/effects"; 
+import { put, select, call, takeLatest } from "redux-saga/effects"; 
 import {
   setFetchApiAction,
   updatePostUserRow,
@@ -8,12 +8,11 @@ import {
 } from "./action";
 import {
   makeSelectUpdateAbleUserData,
-  makeSelectUserRowData,
   makeSelectDeleteRow,
   makeSelectSaveData,
 } from "./selector";
 import { DELETE_ONE_USER, SAVE_DATA_PASS, UPDATE_USER_ROW_DATA } from "./constant";
-export function* fetchUserName(loader){
+export function* fetchUserName(){
   try {
     const requestUrl = "http://localhost:8082/users";
     const options = {
@@ -89,7 +88,7 @@ export function* updateUserRowInfo (){
     }
 }
 export function* deleteUserRowInfo(){
-    const selectedRowData = yield select(makeSelectUpdateAbleUserData());
+    // const selectedRowData = yield select(makeSelectUpdateAbleUserData());
     const allData = yield select(makeSelectDeleteRow())
     const id = allData.id;
     const requestURL = `http://localhost:8082/delete/${id}`;
