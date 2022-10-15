@@ -1,5 +1,5 @@
 import React from 'react';
-import Counter from './component/home';
+import UserDataInfo from './component/home'
 import "./App.css";
 import "primeicons/primeicons.css";
 import "primereact/resources/themes/lara-light-indigo/theme.css";
@@ -13,14 +13,16 @@ class App extends React.Component{
       <Router>
         <div className="grid">
           <div className="col-12">
-            <h2 className='bismillha' style={{textAlign: "right"}}>بسم اله الرحمن الرحيم</h2>
+            <h2 className="bismillha" style={{ textAlign: "right" }}>
+              بسم اله الرحمن الرحيم
+            </h2>
             <Switch>
               <Route path="/" exact>
-                 <Welcome />
+                <Welcome />
               </Route>
-              
+
               <Route path="/crud" exact>
-                <Counter />
+                <UserDataInfo />
               </Route>
             </Switch>
           </div>

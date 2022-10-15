@@ -21,7 +21,7 @@ const initialState = fromJS({
     //when we are creating action then this automatically contains all each new data 
 });
 
-export const counterReducer = (state = initialState, action)=>{
+export const CRUDreducer = (state = initialState, action)=>{
     switch (action.type) {
       case UPDATE_RESPONSE:
         return state.set("updateResponse", action.updateResponse);

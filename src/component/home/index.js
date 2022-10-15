@@ -162,7 +162,6 @@ class UserDataInfo extends React.Component {
         addAge: "",
       });
       setTimeout(() => {
-        try {
           if (
             this.props.saveResponse !== "" &&
             this.props.saveResponse.status === 200
@@ -188,13 +187,6 @@ class UserDataInfo extends React.Component {
               detail: "Failed",
             });
           }
-        } catch (e) {
-          this.toast.show({
-            severity: "error",
-            summary: "API Failed",
-            detail: "Check your internet connection",
-          });
-        }
       }, 10);
     } else {
       this.setState({ setErrorMessage: "p-invalid block" });
