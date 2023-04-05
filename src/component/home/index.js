@@ -90,6 +90,7 @@ class UserDataInfo extends React.Component {
       age: this.state.updateAge,
       occupation: this.state.updateOccupation,
     };
+    console.log("Your basic data need to update " + basicData);
     if(this.state.updatefirstname != '' && this.state.updatelastname != '' && this.state.updateOccupation != ''){
       this.props.onChangeUpdateUserRowData(basicData);
       this.setState({updatefirstname: '', updatelastname: '', updateAge: '', updateOccupation: ''});
